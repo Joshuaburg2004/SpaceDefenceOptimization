@@ -135,12 +135,13 @@ namespace SpaceDefence
         public Vector2 AvoidObstacles()
         {
             Vector2 avoidance = Vector2.Zero;
-            List<GameObject> otherSolids = GameManager
-                .GetGameManager()
-                .GetGameObjects()
-                .Where(o => o != this && o.CollisionType.HasFlag(CollisionType.Solid))
-                .ToList();
-            foreach (GameObject other in otherSolids)
+            foreach (
+                GameObject other in GameManager
+                    .GetGameManager()
+                    .GetGameObjects()
+                    .Where(o => o != this && o.CollisionType.HasFlag(CollisionType.Solid))
+                    .ToList()
+            )
             {
                 Vector2 difference = (
                     GetPosition().Center - other.GetPosition().Center
