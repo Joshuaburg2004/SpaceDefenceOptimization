@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -34,7 +33,6 @@ namespace SpaceDefence
             LifeTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (LifeTime < 0)
                 GameManager.GetGameManager().RemoveGameObject(this);
-
         }
 
         public override void OnCollision(GameObject other)

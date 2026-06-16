@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -38,7 +37,8 @@ namespace SpaceDefence.Engine
             {
                 worstFPS = currentFPS;
             }
-            string fpsCounter = $"FPS: {currentFPS.ToString("N1")} \n Worst: {worstFPS.ToString("N1")}";
+            string fpsCounter =
+                $"FPS: {currentFPS.ToString("N1")} \n Worst: {worstFPS.ToString("N1")}";
             spriteBatch.DrawString(font, fpsCounter, new Vector2(25, 25), Color.White);
         }
     }

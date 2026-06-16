@@ -1,4 +1,3 @@
-
 using System;
 
 namespace SpaceDefence
@@ -12,3 +11,4 @@ namespace SpaceDefence
         Solid = 4,
     }
 }
+

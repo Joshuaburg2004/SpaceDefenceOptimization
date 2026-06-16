@@ -28,7 +28,7 @@ namespace SpaceDefence
             if (lifespan < -fade)
                 GameManager.GetGameManager().RemoveGameObject(this);
             if (lifespan < 0)
-                color.A = (byte)(255 * (fade + lifespan)/fade);
+                color.A = (byte)(255 * (fade + lifespan) / fade);
             lifespan -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             velocity += (float)gameTime.ElapsedGameTime.TotalSeconds * acceleration;
             location += (float)gameTime.ElapsedGameTime.TotalSeconds * velocity;
@@ -36,8 +36,17 @@ namespace SpaceDefence
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, location, null, color, 0, sprite.Bounds.Center.ToVector2(), scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(
+                sprite,
+                location,
+                null,
+                color,
+                0,
+                sprite.Bounds.Center.ToVector2(),
+                scale,
+                SpriteEffects.None,
+                0
+            );
         }
     }
-
 }

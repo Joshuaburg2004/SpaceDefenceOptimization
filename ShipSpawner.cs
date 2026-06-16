@@ -11,8 +11,6 @@ namespace SpaceDefence
         public static int ShipRows = 4;
         public static int ShipColumns = 5;
 
-
-
         public static int XSpacing = 70;
         public static int YSpacing = 200;
 
@@ -24,8 +22,14 @@ namespace SpaceDefence
             {
                 for (int j = 0; j < ShipColumns; j++)
                 {
-                    Point team1Pos = new Point(r.Next(20) + 200 + j * XSpacing * ShipRows + i * XSpacing, r.Next(20) + 200 + i * YSpacing);
-                    Point team2Pos = new Point(r.Next(20) + 200 + j * XSpacing * ShipRows + i * XSpacing, 2000 + r.Next(20) + 200 + i * YSpacing);
+                    Point team1Pos = new Point(
+                        r.Next(20) + 200 + j * XSpacing * ShipRows + i * XSpacing,
+                        r.Next(20) + 200 + i * YSpacing
+                    );
+                    Point team2Pos = new Point(
+                        r.Next(20) + 200 + j * XSpacing * ShipRows + i * XSpacing,
+                        2000 + r.Next(20) + 200 + i * YSpacing
+                    );
                     Ship player = new Ship(team1Pos, CollisionType.Team1, Color.Red);
                     Ship player2 = new Ship(team2Pos, CollisionType.Team2, Color.Blue);
                     manager.AddGameObject(player);

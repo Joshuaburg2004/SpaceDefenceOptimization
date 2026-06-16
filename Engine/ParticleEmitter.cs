@@ -1,7 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace SpaceDefence
 {
@@ -21,9 +19,10 @@ namespace SpaceDefence
         public float maxSpeed = 10;
 
         public Vector2 acceleration = new Vector2(0, 0f);
-        public ParticleData()
-        {}
+
+        public ParticleData() { }
     }
+
     public class ParticleEmitter
     {
         Random random = new Random();
@@ -44,19 +43,32 @@ namespace SpaceDefence
             {
                 Particle particle = new Particle();
 
-                float direction = MathHelper.Lerp(data.minDirection, data.maxDirection, (float)random.NextDouble());
-                particle.velocity = new Vector2((float)Math.Cos(direction), (float)Math.Sin(direction));
-                particle.velocity *= MathHelper.Lerp(data.minSpeed, data.maxSpeed, (float)random.NextDouble());
-                particle.scale = MathHelper.Lerp(data.minScale, data.maxScale, (float)random.NextDouble());
+                float direction = MathHelper.Lerp(
+                    data.minDirection,
+                    data.maxDirection,
+                    (float)random.NextDouble()
+                );
+                particle.velocity = new Vector2(
+                    (float)Math.Cos(direction),
+                    (float)Math.Sin(direction)
+                );
+                particle.velocity *= MathHelper.Lerp(
+                    data.minSpeed,
+                    data.maxSpeed,
+                    (float)random.NextDouble()
+                );
+                particle.scale = MathHelper.Lerp(
+                    data.minScale,
+                    data.maxScale,
+                    (float)random.NextDouble()
+                );
 
                 particle.location = location;
                 particle.acceleration = data.acceleration;
                 particle.lifespan = data.lifespan;
                 particle.fade = data.fade;
                 GameManager.GetGameManager().AddGameObject(particle);
-
             }
         }
-
     }
 }

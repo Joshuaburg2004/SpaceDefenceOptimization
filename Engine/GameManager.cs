@@ -25,10 +25,11 @@ namespace SpaceDefence
 
         public static GameManager GetGameManager()
         {
-            if(gameManager == null)
+            if (gameManager == null)
                 gameManager = new GameManager();
             return gameManager;
         }
+
         public GameManager()
         {
             _gameObjects = new List<GameObject>();
@@ -52,13 +53,13 @@ namespace SpaceDefence
             {
                 gameObject.Load(content);
             }
-            
+
             explosion = new ParticleData();
             explosion.lifespan = 5;
             explosion.particleCount = 40;
             explosion.maxScale = .6f;
             explosion.minScale = .2f;
-            
+
             hit = new ParticleData();
             hit.maxScale = 0.2f;
             hit.minScale = 0.1f;
@@ -78,7 +79,7 @@ namespace SpaceDefence
             // Checks once for every pair of 2 GameObjects if the collide.
             for (int i = 0; i < _gameObjects.Count; i++)
             {
-                for (int j = i+1; j < _gameObjects.Count; j++)
+                for (int j = i + 1; j < _gameObjects.Count; j++)
                 {
                     if (_gameObjects[i].CheckCollision(_gameObjects[j]))
                     {
@@ -87,15 +88,13 @@ namespace SpaceDefence
                     }
                 }
             }
-            
         }
-        
-        public void Update(GameTime gameTime) 
+
+        public void Update(GameTime gameTime)
         {
             InputManager.Update();
             // Handle input
             HandleInput(InputManager);
-
 
             // Update
             foreach (GameObject gameObject in _gameObjects)
@@ -121,7 +120,7 @@ namespace SpaceDefence
             _toBeRemoved.Clear();
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch) 
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(transformMatrix: WorldMatrix);
             foreach (GameObject gameObject in _gameObjects)
@@ -135,9 +134,9 @@ namespace SpaceDefence
         }
 
         /// <summary>
-        /// Add a new GameObject to the GameManager. 
-        /// The GameObject will be added at the start of the next Update step. 
-        /// Once it is added, the GameManager will ensure all steps of the game loop will be called on the object automatically. 
+        /// Add a new GameObject to the GameManager.
+        /// The GameObject will be added at the start of the next Update step.
+        /// Once it is added, the GameManager will ensure all steps of the game loop will be called on the object automatically.
         /// </summary>
         /// <param name="gameObject"> The GameObject to add. </param>
         public void AddGameObject(GameObject gameObject)
@@ -146,7 +145,7 @@ namespace SpaceDefence
         }
 
         /// <summary>
-        /// Remove GameObject from the GameManager. 
+        /// Remove GameObject from the GameManager.
         /// The GameObject will be removed at the start of the next Update step and its Destroy() mehtod will be called.
         /// After that the object will no longer receive any updates.
         /// </summary>
@@ -168,7 +167,8 @@ namespace SpaceDefence
         {
             return new Vector2(
                 RNG.Next(0, Game.GraphicsDevice.Viewport.Width),
-                RNG.Next(0, Game.GraphicsDevice.Viewport.Height));
+                RNG.Next(0, Game.GraphicsDevice.Viewport.Height)
+            );
         }
     }
 }

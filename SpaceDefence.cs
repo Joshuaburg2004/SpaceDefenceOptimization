@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 namespace SpaceDefence
 {
     public class SpaceDefence : Game
@@ -18,7 +18,7 @@ namespace SpaceDefence
             // Set the size of the screen
             _graphics.PreferredBackBufferWidth = 2000;
             _graphics.PreferredBackBufferHeight = 1200;
-            
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -43,7 +43,10 @@ namespace SpaceDefence
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (
+                GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+                || Keyboard.GetState().IsKeyDown(Keys.Escape)
+            )
                 Exit();
             _gameManager.Update(gameTime);
             base.Update(gameTime);
@@ -52,13 +55,9 @@ namespace SpaceDefence
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            
+
             _gameManager.Draw(gameTime, _spriteBatch);
             base.Draw(gameTime);
-
         }
-
-
-
     }
 }
