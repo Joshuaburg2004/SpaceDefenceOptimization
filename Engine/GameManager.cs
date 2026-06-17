@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -77,16 +76,16 @@ namespace SpaceDefence
 
         public void CheckCollision()
         {
-            List<GameObject> objs = _gameObjects.Where(go => go is not Particle).ToList();
             // Checks once for every pair of 2 GameObjects if the collide.
-            for (int i = 0; i < objs.Count; i++)
+            for (int i = 0; i < _gameObjects.Count; i++)
             {
-                for (int j = i + 1; j < objs.Count; j++)
+                if (_gameObjects[i] is Particle) continue;
+                for (int j = i + 1; j < _gameObjects.Count; j++)
                 {
-                    if (objs[i].CheckCollision(objs[j]))
+                    if (_gameObjects[i].CheckCollision(_gameObjects[j]))
                     {
-                        objs[i].OnCollision(objs[j]);
-                        objs[j].OnCollision(objs[i]);
+                        _gameObjects[i].OnCollision(_gameObjects[j]);
+                        _gameObjects[j].OnCollision(_gameObjects[i]);
                     }
                 }
             }
