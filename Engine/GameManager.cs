@@ -5,171 +5,175 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceDefence.Engine;
 
-namespace SpaceDefence
+namespace SpaceDefence;
+
+public class GameManager
 {
-    public class GameManager
+    private static GameManager gameManager;
+    public ParticleData explosion;
+    public ParticleData hit;
+    private FPSCounter counter;
+    private List<GameObject> _gameObjects;
+    private List<GameObject> _toBeRemoved;
+    private List<GameObject> _toBeAdded;
+    private ContentManager _content;
+    public Matrix WorldMatrix { get; set; }
+
+    public Random RNG { get; private set; }
+    public InputManager InputManager { get; private set; }
+    public Game Game { get; private set; }
+
+    public static GameManager GetGameManager()
     {
-        private static GameManager gameManager;
-        public ParticleData explosion;
-        public ParticleData hit;
-        private FPSCounter counter;
-        private List<GameObject> _gameObjects;
-        private List<GameObject> _toBeRemoved;
-        private List<GameObject> _toBeAdded;
-        private ContentManager _content;
-        public Matrix WorldMatrix { get; set; }
+        if (gameManager == null)
+            gameManager = new GameManager();
+        return gameManager;
+    }
 
-        public Random RNG { get; private set; }
-        public InputManager InputManager { get; private set; }
-        public Game Game { get; private set; }
+    public GameManager()
+    {
+        _gameObjects = new List<GameObject>();
+        _toBeRemoved = new List<GameObject>();
+        _toBeAdded = new List<GameObject>();
+        InputManager = new InputManager();
+        RNG = new Random();
+        //WorldMatrix = Matrix.CreateScale(.3f);
+        WorldMatrix = Matrix.CreateScale(0.8f) * Matrix.CreateTranslation(0, -600, 0);
+    }
 
-        public static GameManager GetGameManager()
+    public void Initialize(ContentManager content, Game game)
+    {
+        Game = game;
+        _content = content;
+    }
+
+    public void Load(ContentManager content)
+    {
+        foreach (GameObject gameObject in _gameObjects)
         {
-            if (gameManager == null)
-                gameManager = new GameManager();
-            return gameManager;
+            gameObject.Load(content);
         }
 
-        public GameManager()
-        {
-            _gameObjects = new List<GameObject>();
-            _toBeRemoved = new List<GameObject>();
-            _toBeAdded = new List<GameObject>();
-            InputManager = new InputManager();
-            RNG = new Random();
-            //WorldMatrix = Matrix.CreateScale(.3f);
-            WorldMatrix = Matrix.CreateScale(0.8f) * Matrix.CreateTranslation(0, -600, 0);
-        }
+        explosion = new ParticleData();
+        explosion.lifespan = 5;
+        explosion.particleCount = 40;
+        explosion.maxScale = .6f;
+        explosion.minScale = .2f;
 
-        public void Initialize(ContentManager content, Game game)
-        {
-            Game = game;
-            _content = content;
-        }
+        hit = new ParticleData();
+        hit.maxScale = 0.2f;
+        hit.minScale = 0.1f;
+        counter = new FPSCounter(content.Load<SpriteFont>("Font"));
+    }
 
-        public void Load(ContentManager content)
+    public void HandleInput(InputManager inputManager)
+    {
+        foreach (GameObject gameObject in _gameObjects)
         {
-            foreach (GameObject gameObject in _gameObjects)
+            gameObject.HandleInput(this.InputManager);
+        }
+    }
+
+    public void CheckCollision()
+    {
+        // Checks once for every pair of 2 GameObjects if the collide.
+        for (int i = 0; i < _gameObjects.Count; i++)
+        {
+            if (_gameObjects[i] is not GameObjectOverride)
+                continue;
+            for (int j = i + 1; j < _gameObjects.Count; j++)
             {
-                gameObject.Load(content);
-            }
-
-            explosion = new ParticleData();
-            explosion.lifespan = 5;
-            explosion.particleCount = 40;
-            explosion.maxScale = .6f;
-            explosion.minScale = .2f;
-
-            hit = new ParticleData();
-            hit.maxScale = 0.2f;
-            hit.minScale = 0.1f;
-            counter = new FPSCounter(content.Load<SpriteFont>("Font"));
-        }
-
-        public void HandleInput(InputManager inputManager)
-        {
-            foreach (GameObject gameObject in _gameObjects)
-            {
-                gameObject.HandleInput(this.InputManager);
-            }
-        }
-
-        public void CheckCollision()
-        {
-            // Checks once for every pair of 2 GameObjects if the collide.
-            for (int i = 0; i < _gameObjects.Count; i++)
-            {
-                if (_gameObjects[i] is Particle) continue;
-                for (int j = i + 1; j < _gameObjects.Count; j++)
+                if (_gameObjects[j] is not GameObjectOverride)
+                    continue;
+                GameObjectOverride g1 = _gameObjects[i] as GameObjectOverride;
+                GameObjectOverride g2 = _gameObjects[j] as GameObjectOverride;
+                if (g1.CheckCollision(g2))
                 {
-                    if (_gameObjects[i].CheckCollision(_gameObjects[j]))
-                    {
-                        _gameObjects[i].OnCollision(_gameObjects[j]);
-                        _gameObjects[j].OnCollision(_gameObjects[i]);
-                    }
+                    g1.OnCollision(g2);
+                    g2.OnCollision(g1);
                 }
             }
         }
+    }
 
-        public void Update(GameTime gameTime)
+    public void Update(GameTime gameTime)
+    {
+        InputManager.Update();
+        // Handle input
+        HandleInput(InputManager);
+
+        // Update
+        foreach (GameObject gameObject in _gameObjects)
         {
-            InputManager.Update();
-            // Handle input
-            HandleInput(InputManager);
-
-            // Update
-            foreach (GameObject gameObject in _gameObjects)
-            {
-                gameObject.Update(gameTime);
-            }
-
-            // Check Collission
-            CheckCollision();
-
-            foreach (GameObject gameObject in _toBeAdded)
-            {
-                gameObject.Load(_content);
-                _gameObjects.Add(gameObject);
-            }
-            _toBeAdded.Clear();
-
-            foreach (GameObject gameObject in _toBeRemoved)
-            {
-                gameObject.Destroy();
-                _gameObjects.Remove(gameObject);
-            }
-            _toBeRemoved.Clear();
+            gameObject.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            spriteBatch.Begin(transformMatrix: WorldMatrix);
-            foreach (GameObject gameObject in _gameObjects)
-            {
-                gameObject.Draw(gameTime, spriteBatch);
-            }
-            spriteBatch.End();
-            spriteBatch.Begin();
-            counter.Draw(gameTime, spriteBatch);
-            spriteBatch.End();
-        }
+        // Check Collission
+        CheckCollision();
 
-        /// <summary>
-        /// Add a new GameObject to the GameManager.
-        /// The GameObject will be added at the start of the next Update step.
-        /// Once it is added, the GameManager will ensure all steps of the game loop will be called on the object automatically.
-        /// </summary>
-        /// <param name="gameObject"> The GameObject to add. </param>
-        public void AddGameObject(GameObject gameObject)
+        foreach (GameObject gameObject in _toBeAdded)
         {
-            _toBeAdded.Add(gameObject);
+            gameObject.Load(_content);
+            _gameObjects.Add(gameObject);
         }
+        _toBeAdded.Clear();
 
-        /// <summary>
-        /// Remove GameObject from the GameManager.
-        /// The GameObject will be removed at the start of the next Update step and its Destroy() mehtod will be called.
-        /// After that the object will no longer receive any updates.
-        /// </summary>
-        /// <param name="gameObject"> The GameObject to Remove. </param>
-        public void RemoveGameObject(GameObject gameObject)
+        foreach (GameObject gameObject in _toBeRemoved)
         {
-            _toBeRemoved.Add(gameObject);
+            gameObject.Destroy();
+            _gameObjects.Remove(gameObject);
         }
+        _toBeRemoved.Clear();
+    }
 
-        public List<GameObject> GetGameObjects()
+    public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    {
+        spriteBatch.Begin(transformMatrix: WorldMatrix);
+        foreach (GameObject gameObject in _gameObjects)
         {
-            return _gameObjects;
+            gameObject.Draw(gameTime, spriteBatch);
         }
+        spriteBatch.End();
+        spriteBatch.Begin();
+        counter.Draw(gameTime, spriteBatch);
+        spriteBatch.End();
+    }
 
-        /// <summary>
-        /// Get a random location on the screen.
-        /// </summary>
-        public Vector2 RandomScreenLocation()
-        {
-            return new Vector2(
-                RNG.Next(0, Game.GraphicsDevice.Viewport.Width),
-                RNG.Next(0, Game.GraphicsDevice.Viewport.Height)
-            );
-        }
+    /// <summary>
+    /// Add a new GameObject to the GameManager.
+    /// The GameObject will be added at the start of the next Update step.
+    /// Once it is added, the GameManager will ensure all steps of the game loop will be called on the object automatically.
+    /// </summary>
+    /// <param name="gameObject"> The GameObject to add. </param>
+    public void AddGameObject(GameObject gameObject)
+    {
+        _toBeAdded.Add(gameObject);
+    }
+
+    /// <summary>
+    /// Remove GameObject from the GameManager.
+    /// The GameObject will be removed at the start of the next Update step and its Destroy() mehtod will be called.
+    /// After that the object will no longer receive any updates.
+    /// </summary>
+    /// <param name="gameObject"> The GameObject to Remove. </param>
+    public void RemoveGameObject(GameObject gameObject)
+    {
+        _toBeRemoved.Add(gameObject);
+    }
+
+    public List<GameObject> GetGameObjects()
+    {
+        return _gameObjects;
+    }
+
+    /// <summary>
+    /// Get a random location on the screen.
+    /// </summary>
+    public Vector2 RandomScreenLocation()
+    {
+        return new Vector2(
+            RNG.Next(0, Game.GraphicsDevice.Viewport.Width),
+            RNG.Next(0, Game.GraphicsDevice.Viewport.Height)
+        );
     }
 }
