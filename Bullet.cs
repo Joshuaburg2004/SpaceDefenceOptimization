@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SpaceDefence
 {
-    internal class Bullet : GameObject
+    internal class Bullet : GameObjectOverride
     {
         private Texture2D _texture;
         private CircleCollider _circleCollider;
@@ -35,7 +35,7 @@ namespace SpaceDefence
                 GameManager.GetGameManager().RemoveGameObject(this);
         }
 
-        public override void OnCollision(GameObject other)
+        public override void OnCollision(GameObjectOverride other)
         {
             base.OnCollision(other);
             if (other is Ship && (other.CollisionType & CollisionType) == 0)

@@ -7,7 +7,7 @@ using SpaceDefence.Collision;
 
 namespace SpaceDefence
 {
-    public class Ship : GameObject
+    public class Ship : GameObjectOverride
     {
         public Vector2 Velocity { get; private set; }
         public float speed = 100;
@@ -74,7 +74,7 @@ namespace SpaceDefence
             }
         }
 
-        public override void OnCollision(GameObject other)
+        public override void OnCollision(GameObjectOverride other)
         {
             base.OnCollision(other);
 
@@ -138,12 +138,16 @@ namespace SpaceDefence
                 GameObject other in GameManager
                     .GetGameManager()
                     .GetGameObjects()
-                    .Where(o => o != this && o.CollisionType.HasFlag(CollisionType.Solid))
+                    .Where(o =>
+                        o != this
+                        && o is GameObjectOverride
+                        && (o as GameObjectOverride).CollisionType.HasFlag(CollisionType.Solid)
+                    )
                     .ToList()
             )
             {
                 Vector2 difference = (
-                    GetPosition().Center - other.GetPosition().Center
+                    GetPosition().Center - (other as GameObjectOverride).GetPosition().Center
                 ).ToVector2();
                 float distance = difference.Length();
                 if (distance < AvoidanceRange)
